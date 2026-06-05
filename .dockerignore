@@ -1,0 +1,35 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Django local artifacts
+Daireaux/db.sqlite3
+Daireaux/db.sqlite3-journal
+media/
+staticfiles/
+
+# Environment files (never include secrets)
+.env
+.env.local
+.env.*.local
+
+# Version control and IDE
+.git/
+.gitignore
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and coverage
+*.log
+.coverage
+.pytest_cache/
