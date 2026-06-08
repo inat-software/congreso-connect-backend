@@ -56,6 +56,7 @@ WSGI_APPLICATION = 'conf.wsgi.application'
 ASGI_APPLICATION = 'conf.asgi.application'
 
 STATIC_URL = 'static/'
+STATIC_ROOT = '/app/staticfiles'
 
 # Media files (avatares de usuario)
 MEDIA_URL = '/media/'
@@ -81,6 +82,7 @@ __all__ = [
     'WSGI_APPLICATION',
     'ASGI_APPLICATION',
     'STATIC_URL',
+    'STATIC_ROOT',
     'MEDIA_URL',
     'MEDIA_ROOT',
     'MAX_UPLOAD_SIZE_BYTES',

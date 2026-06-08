@@ -25,12 +25,16 @@ COPY . .
 # Esto asegura que el módulo 'conf.wsgi' se resuelva correctamente
 WORKDIR /app/Congreso-Connect
 
+# Recolectar archivos estáticos (admin, swagger, etc.)
+RUN python manage.py collectstatic --noinput
+
+# Dar permisos de ejecución al entrypoint
+RUN chmod +x /app/entrypoint.sh
+
 # Exponer el puerto interno del contenedor
 EXPOSE 8000
 
-# Comando de arranque:
-# - Primero aplica migraciones.
-# - Luego inicia ASGI con Daphne (requerido para WebSockets/Channels).
+# Ejecutar entrypoint (makemigrations + migrate + daphne)
 # Coolify inyecta $PORT.
 # DJANGO_SETTINGS_MODULE y demás variables se definen como Secrets en Coolify.
-CMD ["sh", "-c", "python manage.py migrate && daphne -b 0.0.0.0 -p ${PORT:-8000} conf.asgi:application"]
+ENTRYPOINT ["/app/entrypoint.sh"]

@@ -9,8 +9,8 @@ venv/
 env/
 
 # Django local artifacts
-Daireaux/db.sqlite3
-Daireaux/db.sqlite3-journal
+db.sqlite3
+db.sqlite3-journal
 media/
 staticfiles/
 

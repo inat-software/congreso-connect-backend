@@ -82,4 +82,9 @@ urlpatterns += [
         serve_media,
         {'document_root': settings.MEDIA_ROOT},
     ),
+    re_path(
+        r'^static/(?P<path>.*)$',
+        static_serve,
+        {'document_root': settings.STATIC_ROOT},
+    ),
 ]
