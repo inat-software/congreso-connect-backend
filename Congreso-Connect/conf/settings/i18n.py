@@ -4,7 +4,7 @@ Configuracion de internacionalizacion y zona horaria.
 
 from ._env import config
 
-LANGUAGE_CODE = config('LANGUAGE_CODE', default='en-us')
+LANGUAGE_CODE = config('LANGUAGE_CODE', default='es')
 
 TIME_ZONE = config('TIME_ZONE', default='UTC')
 

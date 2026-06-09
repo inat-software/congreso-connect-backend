@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
+from django.utils import translation
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -8,6 +10,18 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from apps.user.models import ExpositorProfile
 
 User = get_user_model()
+
+
+def spanish_password_validator(value):
+    """
+    Valida la contrasena con los validadores de Django, devolviendo los mensajes
+    en espanol y como error del propio campo (no en non_field_errors).
+    """
+    try:
+        with translation.override('es'):
+            validate_password(value)
+    except DjangoValidationError as exc:
+        raise serializers.ValidationError(list(exc.messages))
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -67,7 +81,7 @@ class AsistenteRegisterSerializer(serializers.ModelSerializer):
     El rol se fuerza a 'user' en el servidor: NUNCA se acepta desde el cliente.
     """
     password = serializers.CharField(
-        write_only=True, min_length=8, validators=[validate_password],
+        write_only=True, min_length=8, validators=[spanish_password_validator],
     )
 
     class Meta:
@@ -92,7 +106,7 @@ class ExpositorRegisterSerializer(serializers.Serializer):
     """
     email = serializers.EmailField()
     password = serializers.CharField(
-        write_only=True, min_length=8, validators=[validate_password],
+        write_only=True, min_length=8, validators=[spanish_password_validator],
     )
     first_name = serializers.CharField(max_length=150)
     last_name = serializers.CharField(max_length=150)
@@ -229,7 +243,13 @@ class MeUpdateSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     {'current_password': 'La contrasena actual es incorrecta.'}
                 )
-            validate_password(new_password, user)
+            # Mensajes en espanol y asociados al campo 'new_password' (no a
+            # non_field_errors), para que el frontend muestre el error claro.
+            try:
+                with translation.override('es'):
+                    validate_password(new_password, user)
+            except DjangoValidationError as exc:
+                raise serializers.ValidationError({'new_password': list(exc.messages)})
         return attrs
 
     def update(self, instance, validated_data):
