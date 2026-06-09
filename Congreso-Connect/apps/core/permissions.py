@@ -14,6 +14,28 @@ class IsAdminUser(BasePermission):
         )
 
 
+class IsApprovedExpositor(BasePermission):
+    """
+    Solo expositores con perfil APROBADO. Mensajes especificos segun el caso
+    (no logueado / no es expositor / pendiente de aprobacion).
+    """
+
+    def has_permission(self, request, view):
+        user = request.user
+        if not (user and user.is_authenticated):
+            self.message = 'Debes iniciar sesion.'
+            return False
+        if user.role != 'expositor':
+            self.message = 'Necesitas una cuenta de expositor para reservar.'
+            return False
+        profile = getattr(user, 'expositor_profile', None)
+        # 'approved' = ExpositorProfile.ApprovalStatus.APPROVED
+        if not profile or profile.approval_status != 'approved':
+            self.message = 'Tu cuenta de expositor esta pendiente de aprobacion.'
+            return False
+        return True
+
+
 class IsAuthenticatedOrCreateOnly(BasePermission):
     """
     Permite crear sin autenticacion, lectura requiere autenticacion.
