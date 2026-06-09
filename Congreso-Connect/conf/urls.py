@@ -64,6 +64,9 @@ urlpatterns = [
 
     # API Endpoints — Usuarios (CRUD admin)
     path('api/v1/users/', include('apps.user.api.user_urls')),
+
+    # API Endpoints — Expositores (gestion admin: aprobar/rechazar)
+    path('api/v1/expositores/', include('apps.user.api.expositor_urls')),
 ]
 
 # Servir archivos media (avatares). Se registra siempre (no solo en DEBUG) porque
@@ -81,10 +84,5 @@ urlpatterns += [
         r'^media/(?P<path>.*)$',
         serve_media,
         {'document_root': settings.MEDIA_ROOT},
-    ),
-    re_path(
-        r'^static/(?P<path>.*)$',
-        static_serve,
-        {'document_root': settings.STATIC_ROOT},
     ),
 ]

@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from apps.core.models import TimeStampedModel
 from apps.user.managers import CustomUserManager
 
 
@@ -12,6 +13,7 @@ class CustomUser(AbstractUser):
 
     class Role(models.TextChoices):
         ADMIN = 'admin', 'Administrador'
+        EXPOSITOR = 'expositor', 'Expositor'
         USER = 'user', 'Usuario'
 
     # Eliminamos username como campo unico, usamos email
@@ -52,3 +54,43 @@ class CustomUser(AbstractUser):
         """Retorna nombre completo o email como fallback."""
         name = self.get_full_name().strip()
         return name if name else self.email
+
+
+class ExpositorProfile(TimeStampedModel):
+    """
+    Perfil de empresa expositora, ligado 1:1 a un CustomUser con rol 'expositor'.
+    Mantiene los datos de empresa y el estado de aprobacion fuera del modelo de
+    usuario: un asistente comun NO tiene perfil; un expositor nace 'pendiente'
+    hasta que un administrador lo aprueba.
+    """
+
+    class ApprovalStatus(models.TextChoices):
+        PENDING = 'pending', 'Pendiente de aprobacion'
+        APPROVED = 'approved', 'Aprobado'
+        REJECTED = 'rejected', 'Rechazado'
+
+    user = models.OneToOneField(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name='expositor_profile',
+        verbose_name='usuario',
+    )
+    razon_social = models.CharField('razon social', max_length=255)
+    ruc = models.CharField('RUC / documento', max_length=20)
+    approval_status = models.CharField(
+        'estado de aprobacion',
+        max_length=20,
+        choices=ApprovalStatus.choices,
+        default=ApprovalStatus.PENDING,
+        db_index=True,
+    )
+
+    class Meta:
+        app_label = 'user'
+        db_table = 'user_expositor_profile'
+        verbose_name = 'Perfil de expositor'
+        verbose_name_plural = 'Perfiles de expositor'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.razon_social} ({self.get_approval_status_display()})'

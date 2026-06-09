@@ -1,7 +1,11 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
+from django.db import transaction
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
+
+from apps.user.models import ExpositorProfile
 
 User = get_user_model()
 
@@ -44,15 +48,99 @@ class LogoutSerializer(serializers.Serializer):
         self.token.blacklist()
 
 
+def build_auth_response(user):
+    """
+    Genera tokens JWT (auto-login) + datos del usuario.
+    Mismo formato que la respuesta de login para que el frontend lo trate igual.
+    """
+    refresh = CustomTokenObtainPairSerializer.get_token(user)
+    return {
+        'access': str(refresh.access_token),
+        'refresh': str(refresh),
+        'user': UserMinimalSerializer(user).data,
+    }
+
+
+class AsistenteRegisterSerializer(serializers.ModelSerializer):
+    """
+    Auto-registro de ASISTENTE / comprador. Crea una cuenta activa de inmediato.
+    El rol se fuerza a 'user' en el servidor: NUNCA se acepta desde el cliente.
+    """
+    password = serializers.CharField(
+        write_only=True, min_length=8, validators=[validate_password],
+    )
+
+    class Meta:
+        model = User
+        fields = ('email', 'password', 'first_name', 'last_name', 'phone')
+        extra_kwargs = {
+            'first_name': {'required': True},
+            'last_name': {'required': True},
+        }
+
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        validated_data['role'] = User.Role.USER
+        return User.objects.create_user(password=password, **validated_data)
+
+
+class ExpositorRegisterSerializer(serializers.Serializer):
+    """
+    Auto-registro de EXPOSITOR. Crea el usuario (rol 'expositor') y su
+    ExpositorProfile en estado 'pendiente de aprobacion'. Un administrador
+    debera aprobarlo despues. El rol se fuerza en el servidor.
+    """
+    email = serializers.EmailField()
+    password = serializers.CharField(
+        write_only=True, min_length=8, validators=[validate_password],
+    )
+    first_name = serializers.CharField(max_length=150)
+    last_name = serializers.CharField(max_length=150)
+    phone = serializers.CharField(max_length=30, required=False, allow_blank=True)
+    razon_social = serializers.CharField(max_length=255)
+    ruc = serializers.CharField(max_length=20)
+
+    def validate_email(self, value):
+        value = value.strip().lower()
+        if User.objects.filter(email__iexact=value).exists():
+            raise serializers.ValidationError('Ya existe un usuario con este correo.')
+        return value
+
+    @transaction.atomic
+    def create(self, validated_data):
+        profile_data = {
+            'razon_social': validated_data.pop('razon_social'),
+            'ruc': validated_data.pop('ruc'),
+        }
+        password = validated_data.pop('password')
+        user = User.objects.create_user(
+            password=password,
+            role=User.Role.EXPOSITOR,
+            **validated_data,
+        )
+        ExpositorProfile.objects.create(user=user, **profile_data)
+        return user
+
+
 class UserMinimalSerializer(serializers.ModelSerializer):
     """Datos minimos del usuario para incluir en la respuesta de login."""
     full_name = serializers.CharField(read_only=True)
     role_display = serializers.CharField(source='get_role_display', read_only=True)
+    # Estado de aprobacion del expositor (None si el usuario no es expositor).
+    # Permite al frontend decidir a donde redirigir tras el login.
+    expositor_status = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'first_name', 'last_name', 'full_name', 'role', 'role_display', 'avatar')
+        fields = (
+            'id', 'email', 'first_name', 'last_name', 'full_name',
+            'role', 'role_display', 'expositor_status', 'avatar',
+        )
         read_only_fields = fields
+
+    def get_expositor_status(self, obj):
+        profile = getattr(obj, 'expositor_profile', None)
+        return profile.approval_status if profile else None
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -112,3 +200,20 @@ class UserWriteSerializer(serializers.ModelSerializer):
             instance.set_password(password)
         instance.save()
         return instance
+
+
+class ExpositorProfileAdminSerializer(serializers.ModelSerializer):
+    """Lectura de perfiles de expositor para la gestion del administrador."""
+    user = UserMinimalSerializer(read_only=True)
+    approval_status_display = serializers.CharField(
+        source='get_approval_status_display', read_only=True,
+    )
+
+    class Meta:
+        model = ExpositorProfile
+        fields = (
+            'id', 'razon_social', 'ruc',
+            'approval_status', 'approval_status_display',
+            'user', 'created_at', 'updated_at',
+        )
+        read_only_fields = fields

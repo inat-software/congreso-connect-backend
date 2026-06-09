@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from apps.user.models import CustomUser
+from apps.user.models import CustomUser, ExpositorProfile
 
 
 @admin.register(CustomUser)
@@ -29,3 +29,15 @@ class CustomUserAdmin(UserAdmin):
             'fields': ('email', 'first_name', 'last_name', 'role', 'password1', 'password2'),
         }),
     )
+
+
+@admin.register(ExpositorProfile)
+class ExpositorProfileAdmin(admin.ModelAdmin):
+    """Permite al administrador revisar y aprobar expositores pendientes."""
+
+    list_display = ('razon_social', 'ruc', 'user', 'approval_status', 'created_at')
+    list_filter = ('approval_status',)
+    search_fields = ('razon_social', 'ruc', 'user__email')
+    list_editable = ('approval_status',)
+    ordering = ('-created_at',)
+    autocomplete_fields = ('user',)
