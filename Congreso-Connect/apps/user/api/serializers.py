@@ -134,7 +134,7 @@ class UserMinimalSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             'id', 'email', 'first_name', 'last_name', 'full_name',
-            'role', 'role_display', 'expositor_status', 'avatar',
+            'role', 'role_display', 'expositor_status', 'phone', 'avatar',
         )
         read_only_fields = fields
 
@@ -198,6 +198,59 @@ class UserWriteSerializer(serializers.ModelSerializer):
             setattr(instance, attr, value)
         if password:
             instance.set_password(password)
+        instance.save()
+        return instance
+
+
+class MeUpdateSerializer(serializers.ModelSerializer):
+    """
+    Edicion del PROPIO perfil del usuario autenticado (no de otros).
+    Permite cambiar nombre, telefono y avatar. Para cambiar la contrasena se
+    exige la contrasena actual (buena practica: el atacante con una sesion
+    robada no puede cambiarla sin conocer la actual).
+    """
+    current_password = serializers.CharField(write_only=True, required=False)
+    new_password = serializers.CharField(write_only=True, required=False)
+    avatar = serializers.ImageField(required=False, allow_null=True)
+
+    class Meta:
+        model = User
+        fields = (
+            'first_name', 'last_name', 'phone', 'avatar',
+            'current_password', 'new_password',
+        )
+
+    def validate(self, attrs):
+        new_password = attrs.get('new_password')
+        if new_password:
+            user = self.instance
+            current = attrs.get('current_password')
+            if not current or not user.check_password(current):
+                raise serializers.ValidationError(
+                    {'current_password': 'La contrasena actual es incorrecta.'}
+                )
+            validate_password(new_password, user)
+        return attrs
+
+    def update(self, instance, validated_data):
+        validated_data.pop('current_password', None)
+        new_password = validated_data.pop('new_password', None)
+
+        # Manejo de avatar: si llega None explicito, borrar; si llega uno nuevo,
+        # eliminar el anterior del disco; si no llega, no tocar.
+        new_avatar = validated_data.get('avatar', 'NOT_SET')
+        if new_avatar is None and instance.avatar:
+            instance.avatar.delete(save=False)
+            validated_data['avatar'] = None
+        elif new_avatar == 'NOT_SET':
+            validated_data.pop('avatar', None)
+        elif new_avatar and instance.avatar:
+            instance.avatar.delete(save=False)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        if new_password:
+            instance.set_password(new_password)
         instance.save()
         return instance
 

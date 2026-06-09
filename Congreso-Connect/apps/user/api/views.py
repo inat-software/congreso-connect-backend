@@ -18,6 +18,7 @@ from apps.user.api.serializers import (
     ExpositorProfileAdminSerializer,
     ExpositorRegisterSerializer,
     LogoutSerializer,
+    MeUpdateSerializer,
     UserMinimalSerializer,
     UserSerializer,
     UserWriteSerializer,
@@ -133,11 +134,12 @@ class LogoutView(APIView):
 
 class MeView(APIView):
     """
-    GET /api/v1/auth/me/
-    Retorna los datos del usuario autenticado actual.
-    Util para verificar la sesion desde el frontend.
+    GET   /api/v1/auth/me/ — datos del usuario autenticado.
+    PATCH /api/v1/auth/me/ — edita el PROPIO perfil (nombre, telefono, avatar,
+          contrasena). El usuario solo puede editarse a si mismo.
     """
     permission_classes = (IsAuthenticated,)
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     @extend_schema(
         summary='Usuario actual',
@@ -148,6 +150,20 @@ class MeView(APIView):
     def get(self, request):
         serializer = UserMinimalSerializer(request.user)
         return Response(serializer.data)
+
+    @extend_schema(
+        summary='Editar mi perfil',
+        description='Actualiza el perfil del usuario autenticado. El cambio de '
+                    'contrasena exige la contrasena actual.',
+        request=MeUpdateSerializer,
+        responses=UserMinimalSerializer,
+        tags=['Autenticacion'],
+    )
+    def patch(self, request):
+        serializer = MeUpdateSerializer(request.user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response(UserMinimalSerializer(user).data)
 
 
 @extend_schema_view(
