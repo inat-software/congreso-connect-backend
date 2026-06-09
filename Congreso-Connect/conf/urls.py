@@ -70,6 +70,9 @@ urlpatterns = [
 
     # API Endpoints — Entradas (CRUD admin + lista publica para la landing)
     path('api/v1/', include('apps.tickets.api.urls')),
+
+    # API Endpoints — Stands (CRUD admin + lista publica para la landing)
+    path('api/v1/', include('apps.stands.api.urls')),
 ]
 
 # Servir archivos media (avatares). Se registra siempre (no solo en DEBUG) porque
