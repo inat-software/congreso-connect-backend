@@ -67,6 +67,9 @@ urlpatterns = [
 
     # API Endpoints — Expositores (gestion admin: aprobar/rechazar)
     path('api/v1/expositores/', include('apps.user.api.expositor_urls')),
+
+    # API Endpoints — Entradas (CRUD admin + lista publica para la landing)
+    path('api/v1/', include('apps.tickets.api.urls')),
 ]
 
 # Servir archivos media (avatares). Se registra siempre (no solo en DEBUG) porque
