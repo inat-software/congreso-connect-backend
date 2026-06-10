@@ -50,9 +50,7 @@ Daireaux/.env
 .DS_Store
 Thumbs.db
 
-# Migrations - ignorar archivos de migración pero mantener las carpetas                                         
-**/migrations/*.py                                                                                       
-!**/migrations/__init__.py  
+# Migrations - se commitean para deployments repetibles
 
 .env
 */.env
