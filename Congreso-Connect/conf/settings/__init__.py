@@ -14,3 +14,4 @@ from .cache import *             # noqa: F401,F403
 from .channels import *          # noqa: F401,F403
 from .celery import *            # noqa: F401,F403
 from .i18n import *              # noqa: F401,F403
+from .email import *             # noqa: F401,F403

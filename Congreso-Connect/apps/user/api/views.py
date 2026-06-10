@@ -25,6 +25,7 @@ from apps.user.api.serializers import (
     build_auth_response,
 )
 from apps.user.models import ExpositorProfile
+from apps.user.services import send_qr_email
 
 User = get_user_model()
 
@@ -150,6 +151,25 @@ class MeView(APIView):
     def get(self, request):
         serializer = UserMinimalSerializer(request.user)
         return Response(serializer.data)
+
+
+class SendMyQrView(APIView):
+    """
+    POST /api/v1/auth/me/send-qr/
+    Envia al usuario autenticado su codigo QR de asistente por correo.
+    """
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        summary='Enviarme mi QR por correo',
+        description='Genera (si hace falta) el token del usuario y le envia su QR por email.',
+        request=None,
+        responses={200: None},
+        tags=['Autenticacion'],
+    )
+    def post(self, request):
+        send_qr_email(request.user)
+        return Response({'detail': 'Te enviamos tu código QR al correo.'})
 
     @extend_schema(
         summary='Editar mi perfil',

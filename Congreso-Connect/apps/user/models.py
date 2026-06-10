@@ -33,6 +33,9 @@ class CustomUser(AbstractUser):
         blank=True,
         null=True,
     )
+    # Token que codifica el QR del asistente (se genera cuando se necesita).
+    # nullable+unique para poder migrar sin chocar con filas existentes.
+    qr_token = models.UUIDField('token QR', null=True, blank=True, unique=True, editable=False)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']

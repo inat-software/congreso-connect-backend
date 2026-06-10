@@ -7,6 +7,7 @@ from apps.user.api.views import (
     RefreshTokenView,
     LogoutView,
     MeView,
+    SendMyQrView,
 )
 
 app_name = 'auth'
@@ -18,4 +19,5 @@ urlpatterns = [
     path('refresh/', RefreshTokenView.as_view(), name='token-refresh'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('me/', MeView.as_view(), name='me'),
+    path('me/send-qr/', SendMyQrView.as_view(), name='me-send-qr'),
 ]
