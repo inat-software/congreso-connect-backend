@@ -74,10 +74,19 @@ class EventConfig(TimeStampedModel):
 
 
 class Sponsor(TimeStampedModel):
-    """A sponsor/partner shown in the landing."""
+    """
+    A sponsor/partner shown in the landing.
+
+    El logo puede venir de dos formas (al menos una):
+      - `logo`: archivo subido a nuestro /media/ (lo controlamos nosotros).
+      - `logo_url`: URL/CDN externa (p. ej. assets de Lovable). Util para
+        cargar rapido, pero depende de un tercero; preferir `logo` en produccion.
+    `logo_display` resuelve cual usar (URL externa si existe, si no el archivo).
+    """
 
     name = models.CharField('nombre', max_length=150)
-    logo = models.ImageField('logo', upload_to='sponsors/%Y/%m/')
+    logo = models.ImageField('logo (archivo)', upload_to='sponsors/%Y/%m/', null=True, blank=True)
+    logo_url = models.URLField('logo (URL/CDN externa)', max_length=500, blank=True)
     website = models.URLField('sitio web', blank=True)
     tier = models.CharField('nivel', max_length=50, blank=True)
     is_active = models.BooleanField('activo', default=True)
@@ -89,6 +98,14 @@ class Sponsor(TimeStampedModel):
         verbose_name = 'Patrocinador'
         verbose_name_plural = 'Patrocinadores'
         ordering = ['sort_order', 'id']
+
+    def logo_display(self, request=None):
+        """URL efectiva del logo: la externa si existe, si no el archivo subido."""
+        if self.logo_url:
+            return self.logo_url
+        if self.logo:
+            return request.build_absolute_uri(self.logo.url) if request else self.logo.url
+        return None
 
     def __str__(self):
         return self.name
