@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'apps.tickets.apps.TicketsConfig',
     'apps.stands.apps.StandsConfig',
     'apps.content.apps.ContentConfig',
+    'apps.chat.apps.ChatConfig',
 ]
 
 MIDDLEWARE = [

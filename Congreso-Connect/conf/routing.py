@@ -2,7 +2,11 @@
 Routing principal de WebSockets para Django Channels.
 Aqui se registran las rutas ws:// del proyecto.
 """
+from django.urls import path
 
-# Registrar aqui las rutas ws:// a medida que se agreguen consumers.
-# Ejemplo: path('ws/mi-canal/', MiConsumer.as_asgi()),
-websocket_urlpatterns = []
+from apps.chat.consumers import ChatConsumer
+
+websocket_urlpatterns = [
+    # Chat 1 a 1. Auth por JWT en query param: ws/chat/?token=<access>
+    path('ws/chat/', ChatConsumer.as_asgi()),
+]
