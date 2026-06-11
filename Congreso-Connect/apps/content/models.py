@@ -45,6 +45,15 @@ class EventConfig(TimeStampedModel):
     )
     map_query = models.CharField('consulta del mapa', max_length=255, blank=True, default='Costa del Sol Wyndham Trujillo')
 
+    # Datos de contacto que muestra el footer.
+    contact_whatsapp_primary = models.CharField('whatsapp 1', max_length=40, blank=True, default='+51 931 388 602')
+    contact_whatsapp_secondary = models.CharField('whatsapp 2', max_length=40, blank=True, default='+51 993 289 550')
+    contact_email = models.EmailField('email de contacto', blank=True, default='camaradeturismolalibertad@gmail.com')
+    contact_address = models.CharField(
+        'direccion', max_length=255, blank=True,
+        default='Jr. Independencia 467 · Plaza de Armas (2do piso), Trujillo',
+    )
+
     class Meta:
         app_label = 'content'
         db_table = 'content_event_config'

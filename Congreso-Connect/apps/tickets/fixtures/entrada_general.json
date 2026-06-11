@@ -1,0 +1,18 @@
+[
+  {
+    "model": "tickets.tickettype",
+    "pk": 1,
+    "fields": {
+      "name": "Entrada general",
+      "description": "Acceso a Zona de Stand y exhibiciones culturales.",
+      "price": "0.00",
+      "currency": "PEN",
+      "is_popular": false,
+      "is_active": true,
+      "capacity": null,
+      "sort_order": 0,
+      "created_at": "2026-06-11T13:00:00Z",
+      "updated_at": "2026-06-11T13:00:00Z"
+    }
+  }
+]

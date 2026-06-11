@@ -10,16 +10,20 @@ from apps.content.models import (
 )
 
 
+EVENT_CONFIG_FIELDS = (
+    'location_headline', 'location_description', 'dates', 'venue',
+    'guest_country', 'previous_edition_label', 'previous_edition_stats',
+    'map_query', 'contact_whatsapp_primary', 'contact_whatsapp_secondary',
+    'contact_email', 'contact_address',
+)
+
+
 class EventConfigSerializer(serializers.ModelSerializer):
     """Configuración del evento (singleton). Lectura/edición para el admin."""
 
     class Meta:
         model = EventConfig
-        fields = (
-            'location_headline', 'location_description', 'dates', 'venue',
-            'guest_country', 'previous_edition_label', 'previous_edition_stats',
-            'map_query', 'updated_at',
-        )
+        fields = EVENT_CONFIG_FIELDS + ('updated_at',)
         read_only_fields = ('updated_at',)
 
 
@@ -28,11 +32,7 @@ class PublicEventConfigSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EventConfig
-        fields = (
-            'location_headline', 'location_description', 'dates', 'venue',
-            'guest_country', 'previous_edition_label', 'previous_edition_stats',
-            'map_query',
-        )
+        fields = EVENT_CONFIG_FIELDS
         read_only_fields = fields
 
 

@@ -1,0 +1,22 @@
+[
+  {
+    "model": "content.eventconfig",
+    "pk": 1,
+    "fields": {
+      "location_headline": "Trujillo, Perú",
+      "location_description": "Nueva sede premium 5★ · Costa del Sol Wyndham Trujillo. Un espacio ideal para reuniones estratégicas, networking y experiencias culturales.",
+      "dates": "21, 22 y 23 de octubre 2026",
+      "venue": "Costa del Sol Wyndham · Trujillo",
+      "guest_country": "Chile",
+      "previous_edition_label": "Edición 2025",
+      "previous_edition_stats": "+200 empresas · +380 reuniones B2B",
+      "map_query": "Costa del Sol Wyndham Trujillo",
+      "contact_whatsapp_primary": "+51 931 388 602",
+      "contact_whatsapp_secondary": "+51 993 289 550",
+      "contact_email": "camaradeturismolalibertad@gmail.com",
+      "contact_address": "Jr. Independencia 467 · Plaza de Armas (2do piso), Trujillo",
+      "created_at": "2026-06-11T13:00:00Z",
+      "updated_at": "2026-06-11T13:00:00Z"
+    }
+  }
+]
