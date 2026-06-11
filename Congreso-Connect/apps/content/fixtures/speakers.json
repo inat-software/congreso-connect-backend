@@ -1,0 +1,66 @@
+[
+  {
+    "model": "content.speaker",
+    "pk": 1,
+    "fields": {
+      "name": "María Fernández",
+      "role": "Mintur Chile · País invitado",
+      "position": "Directora de Promoción Internacional · Subsecretaría de Turismo de Chile",
+      "bio": "Más de 15 años liderando estrategias de promoción turística para Chile en mercados de Latinoamérica, Europa y Asia. Ha sido clave en el posicionamiento de la marca país y en alianzas con operadores internacionales para diversificar la oferta cultural y de naturaleza.",
+      "topic": "Chile como país invitado: oportunidades de integración turística con el norte del Perú.",
+      "photo": null,
+      "is_active": true,
+      "sort_order": 0,
+      "created_at": "2026-06-11T13:00:00Z",
+      "updated_at": "2026-06-11T13:00:00Z"
+    }
+  },
+  {
+    "model": "content.speaker",
+    "pk": 2,
+    "fields": {
+      "name": "Carlos Quispe",
+      "role": "CANATUR · Cámara Nac. de Turismo",
+      "position": "Vicepresidente · Cámara Nacional de Turismo del Perú (CANATUR)",
+      "bio": "Empresario hotelero con tres décadas de experiencia en el sector. Ha impulsado políticas público-privadas para el desarrollo del turismo receptivo y la formalización de pymes turísticas a nivel nacional.",
+      "topic": "Hoja de ruta del turismo peruano 2026-2030: inversión, conectividad y sostenibilidad.",
+      "photo": null,
+      "is_active": true,
+      "sort_order": 1,
+      "created_at": "2026-06-11T13:00:00Z",
+      "updated_at": "2026-06-11T13:00:00Z"
+    }
+  },
+  {
+    "model": "content.speaker",
+    "pk": 3,
+    "fields": {
+      "name": "Lucía Vargas",
+      "role": "Promperú · Estrategia Norte",
+      "position": "Gerente Regional Norte · PROMPERÚ",
+      "bio": "Especialista en marketing turístico y desarrollo de destinos. Lidera la estrategia macrorregional del norte peruano, articulando a La Libertad, Lambayeque, Piura y Tumbes en una propuesta integrada de cultura Muchik, gastronomía y playas.",
+      "topic": "Marca Norte: cómo construir un destino competitivo desde la identidad Muchik.",
+      "photo": null,
+      "is_active": true,
+      "sort_order": 2,
+      "created_at": "2026-06-11T13:00:00Z",
+      "updated_at": "2026-06-11T13:00:00Z"
+    }
+  },
+  {
+    "model": "content.speaker",
+    "pk": 4,
+    "fields": {
+      "name": "Andrés Soto",
+      "role": "Costa del Sol Wyndham",
+      "position": "Director Comercial · Costa del Sol Wyndham Hoteles",
+      "bio": "Ejecutivo con amplia trayectoria en hotelería 5★ y MICE en el Perú. Ha desarrollado productos premium para turismo corporativo, eventos y experiencias culturales en la macrorregión norte.",
+      "topic": "Turismo MICE en Trujillo: infraestructura, servicios y experiencias para el viajero corporativo.",
+      "photo": null,
+      "is_active": true,
+      "sort_order": 3,
+      "created_at": "2026-06-11T13:00:00Z",
+      "updated_at": "2026-06-11T13:00:00Z"
+    }
+  }
+]
