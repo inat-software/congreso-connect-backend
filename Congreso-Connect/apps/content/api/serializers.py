@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.content.models import EventConfig, Speaker, Sponsor
+from apps.content.models import Banner, EventConfig, Speaker, Sponsor
 
 
 class EventConfigSerializer(serializers.ModelSerializer):
@@ -70,4 +70,26 @@ class PublicSponsorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sponsor
         fields = ('id', 'name', 'logo', 'website', 'tier')
+        read_only_fields = fields
+
+
+class BannerSerializer(serializers.ModelSerializer):
+    """Full read/write serializer for admin management."""
+    image = serializers.ImageField(required=False, allow_null=True)
+
+    class Meta:
+        model = Banner
+        fields = (
+            'id', 'image', 'eyebrow', 'title', 'subtitle',
+            'is_active', 'sort_order', 'created_at', 'updated_at',
+        )
+        read_only_fields = ('id', 'created_at', 'updated_at')
+
+
+class PublicBannerSerializer(serializers.ModelSerializer):
+    """Lightweight read-only serializer exposed to the public landing."""
+
+    class Meta:
+        model = Banner
+        fields = ('id', 'image', 'eyebrow', 'title', 'subtitle')
         read_only_fields = fields

@@ -5,9 +5,11 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view
 
 from apps.core.permissions import IsAdminUser
-from apps.content.models import EventConfig, Speaker, Sponsor
+from apps.content.models import Banner, EventConfig, Speaker, Sponsor
 from apps.content.api.serializers import (
+    BannerSerializer,
     EventConfigSerializer,
+    PublicBannerSerializer,
     PublicEventConfigSerializer,
     PublicSpeakerSerializer,
     PublicSponsorSerializer,
@@ -86,6 +88,41 @@ class PublicSponsorListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Sponsor.objects.filter(is_active=True).order_by('sort_order', 'id')
+
+
+@extend_schema_view(
+    list=extend_schema(summary='Listar banners', tags=['Banners']),
+    retrieve=extend_schema(summary='Detalle de banner', tags=['Banners']),
+    create=extend_schema(summary='Crear banner', tags=['Banners']),
+    update=extend_schema(summary='Editar banner', tags=['Banners']),
+    partial_update=extend_schema(summary='Editar banner', tags=['Banners']),
+    destroy=extend_schema(summary='Eliminar banner', tags=['Banners']),
+)
+class BannerViewSet(viewsets.ModelViewSet):
+    """CRUD de banners del carrusel. SEGURIDAD: solo admin. Acepta multipart (imagen)."""
+    queryset = Banner.objects.all()
+    serializer_class = BannerSerializer
+    permission_classes = (IsAuthenticated, IsAdminUser)
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ['title', 'eyebrow', 'subtitle']
+    ordering_fields = ['sort_order', 'title', 'created_at']
+    ordering = ['sort_order', 'id']
+
+
+@extend_schema(
+    summary='Banners activos (publico)',
+    description='Lista los banners activos del carrusel para la landing. Sin autenticacion.',
+    tags=['Banners'],
+)
+class PublicBannerListView(generics.ListAPIView):
+    """Lectura publica para la landing: solo banners activos."""
+    serializer_class = PublicBannerSerializer
+    permission_classes = (AllowAny,)
+    pagination_class = None
+
+    def get_queryset(self):
+        return Banner.objects.filter(is_active=True).order_by('sort_order', 'id')
 
 
 @extend_schema(summary='Configuración del evento (admin)', tags=['Configuración'])

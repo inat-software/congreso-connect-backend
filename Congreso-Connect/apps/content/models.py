@@ -83,3 +83,27 @@ class Sponsor(TimeStampedModel):
 
     def __str__(self):
         return self.name
+
+
+class Banner(TimeStampedModel):
+    """
+    Una diapositiva del carrusel principal del landing. El admin puede crear
+    tantas como quiera; la imagen se guarda fisicamente en /media/banners/.
+    """
+
+    image = models.ImageField('imagen', upload_to='banners/%Y/%m/')
+    eyebrow = models.CharField('etiqueta superior', max_length=150, blank=True)
+    title = models.CharField('titulo', max_length=200, blank=True)
+    subtitle = models.CharField('subtitulo', max_length=300, blank=True)
+    is_active = models.BooleanField('activo', default=True)
+    sort_order = models.PositiveIntegerField('orden', default=0)
+
+    class Meta:
+        app_label = 'content'
+        db_table = 'content_banner'
+        verbose_name = 'Banner'
+        verbose_name_plural = 'Banners'
+        ordering = ['sort_order', 'id']
+
+    def __str__(self):
+        return self.title or f'Banner #{self.pk}'

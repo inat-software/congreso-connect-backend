@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from apps.content.models import EventConfig, Speaker, Sponsor
+from apps.content.models import Banner, EventConfig, Speaker, Sponsor
 
 
 @admin.register(EventConfig)
@@ -29,4 +29,13 @@ class SponsorAdmin(admin.ModelAdmin):
     list_filter = ('is_active', 'tier')
     list_editable = ('is_active', 'sort_order')
     search_fields = ('name', 'tier')
+    ordering = ('sort_order', 'id')
+
+
+@admin.register(Banner)
+class BannerAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'eyebrow', 'is_active', 'sort_order')
+    list_filter = ('is_active',)
+    list_editable = ('is_active', 'sort_order')
+    search_fields = ('title', 'eyebrow', 'subtitle')
     ordering = ('sort_order', 'id')
