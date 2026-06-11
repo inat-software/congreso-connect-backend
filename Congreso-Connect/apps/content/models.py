@@ -107,3 +107,65 @@ class Banner(TimeStampedModel):
 
     def __str__(self):
         return self.title or f'Banner #{self.pk}'
+
+
+class B2BConfig(TimeStampedModel):
+    """
+    Configuracion (singleton) de la seccion Rueda de Negocios B2B: textos y la
+    tarjeta de inscripcion. La agenda se maneja aparte en B2BAgendaItem.
+    """
+
+    eyebrow = models.CharField('etiqueta', max_length=50, blank=True, default='B2B')
+    title = models.CharField('titulo', max_length=150, blank=True, default='Rueda de Negocios')
+    description = models.TextField(
+        'descripcion', blank=True,
+        default='Mesas exclusivas para reuniones estratégicas y alianzas comerciales '
+                'con compradores nacionales e internacionales.',
+    )
+    card_title = models.CharField('titulo de la tarjeta', max_length=120, blank=True, default='Inscripción B2B')
+    price_label = models.CharField('etiqueta de precio', max_length=120, blank=True, default='Precio regular')
+    price = models.CharField('precio', max_length=60, blank=True, default='S/ 1,500')
+    price_note = models.CharField('nota de precio', max_length=120, blank=True, default='incluido IGV')
+    includes_text = models.TextField(
+        'que incluye', blank=True,
+        default='Incluye: table tent, dos sillas, WiFi, mantelería, conexión laptops, personal de logística.',
+    )
+    cta_label = models.CharField('texto del boton', max_length=120, blank=True, default='Registrarme a la rueda')
+
+    class Meta:
+        app_label = 'content'
+        db_table = 'content_b2b_config'
+        verbose_name = 'Configuración B2B'
+        verbose_name_plural = 'Configuración B2B'
+
+    def save(self, *args, **kwargs):
+        self.pk = 1  # siempre la misma fila → singleton
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def load(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+    def __str__(self):
+        return 'Configuración B2B'
+
+
+class B2BAgendaItem(TimeStampedModel):
+    """Una fila de la agenda de la Rueda de Negocios B2B."""
+
+    day_label = models.CharField('etiqueta del dia', max_length=80)
+    title = models.CharField('actividad', max_length=200)
+    time_range = models.CharField('horario', max_length=80, blank=True)
+    is_active = models.BooleanField('activo', default=True)
+    sort_order = models.PositiveIntegerField('orden', default=0)
+
+    class Meta:
+        app_label = 'content'
+        db_table = 'content_b2b_agenda_item'
+        verbose_name = 'Agenda B2B'
+        verbose_name_plural = 'Agenda B2B'
+        ordering = ['sort_order', 'id']
+
+    def __str__(self):
+        return f'{self.day_label} — {self.title}'

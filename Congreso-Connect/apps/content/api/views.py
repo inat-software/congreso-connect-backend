@@ -5,10 +5,21 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view
 
 from apps.core.permissions import IsAdminUser
-from apps.content.models import Banner, EventConfig, Speaker, Sponsor
+from apps.content.models import (
+    B2BAgendaItem,
+    B2BConfig,
+    Banner,
+    EventConfig,
+    Speaker,
+    Sponsor,
+)
 from apps.content.api.serializers import (
+    B2BAgendaItemSerializer,
+    B2BConfigSerializer,
     BannerSerializer,
     EventConfigSerializer,
+    PublicB2BAgendaItemSerializer,
+    PublicB2BConfigSerializer,
     PublicBannerSerializer,
     PublicEventConfigSerializer,
     PublicSpeakerSerializer,
@@ -123,6 +134,60 @@ class PublicBannerListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Banner.objects.filter(is_active=True).order_by('sort_order', 'id')
+
+
+@extend_schema_view(
+    list=extend_schema(summary='Listar agenda B2B', tags=['Rueda B2B']),
+    retrieve=extend_schema(summary='Detalle de agenda B2B', tags=['Rueda B2B']),
+    create=extend_schema(summary='Crear fila de agenda B2B', tags=['Rueda B2B']),
+    update=extend_schema(summary='Editar fila de agenda B2B', tags=['Rueda B2B']),
+    partial_update=extend_schema(summary='Editar fila de agenda B2B', tags=['Rueda B2B']),
+    destroy=extend_schema(summary='Eliminar fila de agenda B2B', tags=['Rueda B2B']),
+)
+class B2BAgendaItemViewSet(viewsets.ModelViewSet):
+    """CRUD de la agenda de la Rueda B2B. SEGURIDAD: solo admin."""
+    queryset = B2BAgendaItem.objects.all()
+    serializer_class = B2BAgendaItemSerializer
+    permission_classes = (IsAuthenticated, IsAdminUser)
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ['day_label', 'title']
+    ordering_fields = ['sort_order', 'created_at']
+    ordering = ['sort_order', 'id']
+
+
+@extend_schema(
+    summary='Agenda B2B activa (publico)',
+    description='Lista las filas activas de la agenda B2B para la landing. Sin autenticacion.',
+    tags=['Rueda B2B'],
+)
+class PublicB2BAgendaListView(generics.ListAPIView):
+    """Lectura publica para la landing: solo filas activas de la agenda B2B."""
+    serializer_class = PublicB2BAgendaItemSerializer
+    permission_classes = (AllowAny,)
+    pagination_class = None
+
+    def get_queryset(self):
+        return B2BAgendaItem.objects.filter(is_active=True).order_by('sort_order', 'id')
+
+
+@extend_schema(summary='Configuración B2B (admin)', tags=['Rueda B2B'])
+class B2BConfigAdminView(generics.RetrieveUpdateAPIView):
+    """Lee y edita la configuración de la Rueda B2B (singleton). Solo admin."""
+    serializer_class = B2BConfigSerializer
+    permission_classes = (IsAuthenticated, IsAdminUser)
+
+    def get_object(self):
+        return B2BConfig.load()
+
+
+@extend_schema(summary='Configuración B2B (público)', tags=['Rueda B2B'])
+class PublicB2BConfigView(generics.RetrieveAPIView):
+    """Configuración de la Rueda B2B para la landing (sin auth)."""
+    serializer_class = PublicB2BConfigSerializer
+    permission_classes = (AllowAny,)
+
+    def get_object(self):
+        return B2BConfig.load()
 
 
 @extend_schema(summary='Configuración del evento (admin)', tags=['Configuración'])

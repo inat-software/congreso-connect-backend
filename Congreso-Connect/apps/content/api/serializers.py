@@ -1,6 +1,13 @@
 from rest_framework import serializers
 
-from apps.content.models import Banner, EventConfig, Speaker, Sponsor
+from apps.content.models import (
+    B2BAgendaItem,
+    B2BConfig,
+    Banner,
+    EventConfig,
+    Speaker,
+    Sponsor,
+)
 
 
 class EventConfigSerializer(serializers.ModelSerializer):
@@ -92,4 +99,49 @@ class PublicBannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Banner
         fields = ('id', 'image', 'eyebrow', 'title', 'subtitle')
+        read_only_fields = fields
+
+
+B2B_CONFIG_FIELDS = (
+    'eyebrow', 'title', 'description', 'card_title', 'price_label',
+    'price', 'price_note', 'includes_text', 'cta_label',
+)
+
+
+class B2BConfigSerializer(serializers.ModelSerializer):
+    """Config (singleton) de la Rueda B2B. Lectura/edición para el admin."""
+
+    class Meta:
+        model = B2BConfig
+        fields = B2B_CONFIG_FIELDS + ('updated_at',)
+        read_only_fields = ('updated_at',)
+
+
+class PublicB2BConfigSerializer(serializers.ModelSerializer):
+    """Config de la Rueda B2B para la landing (lectura pública)."""
+
+    class Meta:
+        model = B2BConfig
+        fields = B2B_CONFIG_FIELDS
+        read_only_fields = fields
+
+
+class B2BAgendaItemSerializer(serializers.ModelSerializer):
+    """Full read/write serializer for admin management."""
+
+    class Meta:
+        model = B2BAgendaItem
+        fields = (
+            'id', 'day_label', 'title', 'time_range',
+            'is_active', 'sort_order', 'created_at', 'updated_at',
+        )
+        read_only_fields = ('id', 'created_at', 'updated_at')
+
+
+class PublicB2BAgendaItemSerializer(serializers.ModelSerializer):
+    """Lightweight read-only serializer exposed to the public landing."""
+
+    class Meta:
+        model = B2BAgendaItem
+        fields = ('id', 'day_label', 'title', 'time_range')
         read_only_fields = fields

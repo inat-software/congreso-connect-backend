@@ -1,6 +1,13 @@
 from django.contrib import admin
 
-from apps.content.models import Banner, EventConfig, Speaker, Sponsor
+from apps.content.models import (
+    B2BAgendaItem,
+    B2BConfig,
+    Banner,
+    EventConfig,
+    Speaker,
+    Sponsor,
+)
 
 
 @admin.register(EventConfig)
@@ -38,4 +45,24 @@ class BannerAdmin(admin.ModelAdmin):
     list_filter = ('is_active',)
     list_editable = ('is_active', 'sort_order')
     search_fields = ('title', 'eyebrow', 'subtitle')
+    ordering = ('sort_order', 'id')
+
+
+@admin.register(B2BConfig)
+class B2BConfigAdmin(admin.ModelAdmin):
+    """Singleton: una sola fila de configuración de la Rueda B2B."""
+
+    def has_add_permission(self, request):
+        return not B2BConfig.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(B2BAgendaItem)
+class B2BAgendaItemAdmin(admin.ModelAdmin):
+    list_display = ('day_label', 'title', 'time_range', 'is_active', 'sort_order')
+    list_filter = ('is_active',)
+    list_editable = ('is_active', 'sort_order')
+    search_fields = ('day_label', 'title')
     ordering = ('sort_order', 'id')
