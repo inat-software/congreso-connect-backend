@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth import get_user_model
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
@@ -28,6 +30,7 @@ from apps.user.models import ExpositorProfile
 from apps.user.services import send_qr_email
 
 User = get_user_model()
+logger = logging.getLogger(__name__)
 
 
 class AsistenteRegisterView(APIView):
@@ -49,6 +52,13 @@ class AsistenteRegisterView(APIView):
         serializer = AsistenteRegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+        # Envia automaticamente el QR de asistente por correo. Si el envio falla
+        # (p. ej. SMTP caido) NO rompemos el registro: la cuenta ya quedo creada
+        # y el usuario puede reenviarse el QR desde "Mis entradas".
+        try:
+            send_qr_email(user)
+        except Exception:
+            logger.exception('No se pudo enviar el QR de bienvenida a %s', user.email)
         return Response(build_auth_response(user), status=status.HTTP_201_CREATED)
 
 
