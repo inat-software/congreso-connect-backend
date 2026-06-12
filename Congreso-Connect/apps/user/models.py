@@ -14,6 +14,7 @@ class CustomUser(AbstractUser):
     class Role(models.TextChoices):
         ADMIN = 'admin', 'Administrador'
         EXPOSITOR = 'expositor', 'Expositor'
+        REGISTRADOR = 'registrador', 'Registrador'
         USER = 'user', 'Usuario'
 
     # Eliminamos username como campo unico, usamos email
