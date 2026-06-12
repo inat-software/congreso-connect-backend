@@ -79,6 +79,9 @@ urlpatterns = [
 
     # API Endpoints — Chat (mensajes directos 1 a 1 entre usuarios)
     path('api/v1/chat/', include('apps.chat.api.urls')),
+
+    # API Endpoints — Asistencia (control de aforo: escaneo de QR / manual)
+    path('api/v1/attendance/', include('apps.attendance.api.urls')),
 ]
 
 # Servir archivos media (avatares). Se registra siempre (no solo en DEBUG) porque

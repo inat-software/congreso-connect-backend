@@ -3,6 +3,8 @@ WILDCARD = '*'
 ROLE_PERMISSIONS = {
     # admin tiene todos los permisos (wildcard)
     'admin': {WILDCARD},
+    # registrador (personal de puerta): solo control de aforo / asistencia
+    'registrador': {'view:attendance', 'create:attendance'},
     # user sin permisos por defecto — agregar 'accion:recurso' segun se necesite
     'user': set(),
 }

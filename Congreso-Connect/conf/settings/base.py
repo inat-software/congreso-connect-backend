@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'apps.stands.apps.StandsConfig',
     'apps.content.apps.ContentConfig',
     'apps.chat.apps.ChatConfig',
+    'apps.attendance.apps.AttendanceConfig',
 ]
 
 MIDDLEWARE = [
