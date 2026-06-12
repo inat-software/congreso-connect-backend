@@ -32,10 +32,10 @@ class SpeakerAdmin(admin.ModelAdmin):
 
 @admin.register(Sponsor)
 class SponsorAdmin(admin.ModelAdmin):
-    list_display = ('name', 'tier', 'website', 'is_active', 'sort_order')
-    list_filter = ('is_active', 'tier')
+    list_display = ('name', 'is_active', 'sort_order')
+    list_filter = ('is_active',)
     list_editable = ('is_active', 'sort_order')
-    search_fields = ('name', 'tier')
+    search_fields = ('name',)
     ordering = ('sort_order', 'id')
 
 

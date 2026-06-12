@@ -81,7 +81,7 @@ class SponsorViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, IsAdminUser)
     parser_classes = [MultiPartParser, FormParser, JSONParser]
     filter_backends = [SearchFilter, OrderingFilter]
-    search_fields = ['name', 'tier']
+    search_fields = ['name']
     ordering_fields = ['sort_order', 'name', 'created_at']
     ordering = ['sort_order', 'id']
 

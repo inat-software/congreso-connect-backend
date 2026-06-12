@@ -65,30 +65,27 @@ class SponsorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sponsor
         fields = (
-            'id', 'name', 'logo', 'logo_url', 'website', 'tier',
+            'id', 'name', 'logo',
             'is_active', 'sort_order', 'created_at', 'updated_at',
         )
         read_only_fields = ('id', 'created_at', 'updated_at')
 
     def validate(self, attrs):
-        # Debe quedar al menos una fuente de logo (archivo o URL).
+        # El logo (avatar) es obligatorio: es lo unico que se muestra.
         logo = attrs.get('logo', getattr(self.instance, 'logo', None))
-        logo_url = attrs.get('logo_url', getattr(self.instance, 'logo_url', ''))
-        if not logo and not logo_url:
-            raise serializers.ValidationError(
-                'Debes subir un logo o indicar una URL de logo.'
-            )
+        if not logo:
+            raise serializers.ValidationError('Debes subir un logo.')
         return attrs
 
 
 class PublicSponsorSerializer(serializers.ModelSerializer):
     """Lightweight read-only serializer exposed to the public landing."""
-    # `logo` = URL efectiva (externa si existe, si no el archivo subido).
+    # `logo` = URL absoluta del archivo subido.
     logo = serializers.SerializerMethodField()
 
     class Meta:
         model = Sponsor
-        fields = ('id', 'name', 'logo', 'website', 'tier')
+        fields = ('id', 'name', 'logo')
         read_only_fields = fields
 
     def get_logo(self, obj):
